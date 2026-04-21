@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distributed Task Processing System | Sadhana Geddam</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--bg2:#161b27;--bg3:#1c2333;--border:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.12);--accent:#f97316;--blue:#38bdf8;--green:#34d399;--purple:#a78bfa;--text:#cbd5e1;--muted:#475569;--head:#f8fafc;--mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.8;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 80% 20%,rgba(249,115,22,0.08),transparent);pointer-events:none;z-index:0}
+nav{position:sticky;top:0;z-index:900;height:54px;display:flex;align-items:center;padding:0 2rem;gap:2rem;background:rgba(15,17,23,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.brand{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--head);margin-right:auto}
+nav a{color:var(--muted);text-decoration:none;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;transition:color .2s}
+nav a:hover{color:var(--accent)}
+.hero{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:6rem 2rem 3rem}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:1.25rem;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:'';width:28px;height:1px;background:var(--accent)}
+h1{font-size:clamp(2rem,4.5vw,3.5rem);font-weight:700;color:var(--head);line-height:1.1;margin-bottom:1.25rem;letter-spacing:-0.02em}
+.hero-desc{color:#64748b;font-size:15px;max-width:560px;line-height:1.75;margin-bottom:2.5rem}
+.stat-row{display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content}
+.s{padding:1rem 1.5rem;border-right:1px solid var(--border);background:var(--bg2);min-width:110px}
+.s:last-child{border-right:none}
+.sv{font-family:var(--mono);font-size:1.4rem;font-weight:700;display:block;line-height:1;margin-bottom:4px}
+.sl{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.06em}
+main{max-width:960px;margin:0 auto;padding:3rem 2rem 6rem;position:relative;z-index:1}
+section{margin-bottom:5rem}
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.sn{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);padding:3px 8px;border-radius:2px}
+h2{font-size:1.3rem;font-weight:700;color:var(--head);letter-spacing:-0.01em}
+h3{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin:2rem 0 .75rem}
+p{color:#64748b;margin-bottom:1rem}
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem}
+.arch-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.25rem;transition:border-color .3s}
+.arch-card:hover{border-color:var(--b2)}
+.ac-icon{font-size:24px;margin-bottom:8px}
+.ac-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--head);margin-bottom:6px}
+.ac-desc{font-size:12px;color:#64748b;line-height:1.55}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem}
+.fc{background:var(--bg2);padding:1.1rem;text-align:center}
+.fc-n{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--accent);opacity:0.3;margin-bottom:4px}
+.fc-t{font-family:var(--mono);font-size:11px;color:var(--head);font-weight:500;margin-bottom:4px}
+.fc-d{font-size:11px;color:var(--muted);line-height:1.4}
+.tw{border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:.6rem 1rem;text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--border);background:rgba(249,115,22,0.04);font-weight:400}
+td{padding:.6rem 1rem;border-bottom:1px solid rgba(255,255,255,0.03);font-family:var(--mono);font-size:12px;color:#94a3b8}
+tr:last-child td{border-bottom:none}
+.hi{color:var(--green)!important}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:1rem}
+.card p{margin:0;color:#64748b}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:1rem 0}
+.tag{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:1px solid}
+.to{color:var(--accent);border-color:rgba(249,115,22,0.2);background:rgba(249,115,22,0.06)}
+.tb{color:var(--blue);border-color:rgba(56,189,248,0.2);background:rgba(56,189,248,0.06)}
+.tg{color:var(--green);border-color:rgba(52,211,153,0.2);background:rgba(52,211,153,0.06)}
+.tp{color:var(--purple);border-color:rgba(167,139,250,0.2);background:rgba(167,139,250,0.06)}
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);position:relative;z-index:1}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:640px){.arch-grid,.flow{grid-template-columns:1fr}.stat-row{flex-wrap:wrap}nav a{display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">Sadhana Geddam</span>
+  <a href="#overview">overview</a>
+  <a href="#architecture">architecture</a>
+  <a href="#stack">stack</a>
+</nav>
+<div class="hero">
+  <div class="eyebrow">Python · Docker · Kubernetes · AWS</div>
+  <h1>Distributed Task<br>Processing System</h1>
+  <p class="hero-desc">Asynchronous job execution system supporting concurrent workload management, fault-tolerant worker nodes, and containerized deployment on AWS using Docker and Kubernetes.</p>
+  <div class="stat-row">
+    <div class="s"><span class="sv" style="color:var(--accent)">async</span><span class="sl">task execution</span></div>
+    <div class="s"><span class="sv" style="color:var(--blue)">K8s</span><span class="sl">orchestration</span></div>
+    <div class="s"><span class="sv" style="color:var(--green)">AWS</span><span class="sl">cloud deployment</span></div>
+    <div class="s"><span class="sv" style="color:var(--purple)">fault</span><span class="sl">tolerant workers</span></div>
+  </div>
+</div>
+<main>
+<div class="tags">
+  <span class="tag to">Python</span><span class="tag tb">Docker</span><span class="tag tb">Kubernetes</span>
+  <span class="tag tg">AWS EC2</span><span class="tag tg">AWS S3</span><span class="tag tp">REST APIs</span>
+  <span class="tag to">Async</span><span class="tag tp">Linux</span><span class="tag tg">CI/CD</span>
+</div>
+<section id="overview">
+  <div class="sh"><span class="sn">01</span><h2>Overview</h2></div>
+  <p>Built a distributed system for asynchronous job execution and concurrent task management. Workers pull tasks from a central queue, execute them independently, and report results back — designed for scalability, fault tolerance, and high throughput under variable workloads.</p>
+  <div class="flow">
+    <div class="fc"><div class="fc-n">01</div><div class="fc-t">Job Submission</div><div class="fc-d">REST API accepts tasks and enqueues them</div></div>
+    <div class="fc"><div class="fc-n">02</div><div class="fc-t">Task Queue</div><div class="fc-d">Central broker distributes work to available workers</div></div>
+    <div class="fc"><div class="fc-n">03</div><div class="fc-t">Worker Nodes</div><div class="fc-d">Containerized workers execute tasks concurrently</div></div>
+    <div class="fc"><div class="fc-n">04</div><div class="fc-t">Results</div><div class="fc-d">Outcomes logged, monitored, and returned via API</div></div>
+  </div>
+</section>
+<section id="architecture">
+  <div class="sh"><span class="sn">02</span><h2>Architecture</h2></div>
+  <div class="arch-grid">
+    <div class="arch-card"><div class="ac-icon">⚙️</div><div class="ac-title">Async Task Execution</div><div class="ac-desc">Non-blocking job dispatch with concurrent worker pools — multiple tasks execute in parallel without blocking the submission queue</div></div>
+    <div class="arch-card"><div class="ac-icon">🐳</div><div class="ac-title">Containerized Workers</div><div class="ac-desc">Each worker runs in an isolated Docker container — consistent environment, easy scaling, and clean failure isolation between tasks</div></div>
+    <div class="arch-card"><div class="ac-icon">☸️</div><div class="ac-title">Kubernetes Orchestration</div><div class="ac-desc">K8s manages worker pod lifecycle — auto-restart on failure, horizontal scaling based on queue depth, and rolling deployments</div></div>
+    <div class="arch-card"><div class="ac-icon">☁️</div><div class="ac-title">AWS Deployment</div><div class="ac-desc">Deployed on AWS EC2 with S3 for task artifact storage — ECS/EKS handles container orchestration at scale</div></div>
+    <div class="arch-card"><div class="ac-icon">🔄</div><div class="ac-title">Fault Tolerance</div><div class="ac-desc">Failed tasks automatically re-queued with retry logic — dead letter queue captures permanently failed jobs for inspection</div></div>
+    <div class="arch-card"><div class="ac-icon">📊</div><div class="ac-title">Activity Logging</div><div class="ac-desc">Job execution frequency tracking and status monitoring — full visibility into worker throughput and queue depth over time</div></div>
+  </div>
+</section>
+<section id="stack">
+  <div class="sh"><span class="sn">03</span><h2>Tech Stack</h2></div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Language</td><td>Python 3.9+</td><td>Core task logic and worker implementation</td></tr>
+        <tr><td>Containerization</td><td>Docker</td><td>Worker isolation and consistent environments</td></tr>
+        <tr><td>Orchestration</td><td>Kubernetes</td><td>Pod scheduling, auto-scaling, and health checks</td></tr>
+        <tr><td>Cloud</td><td class="hi">AWS EC2 + S3</td><td>Compute and artifact storage</td></tr>
+        <tr><td>API Layer</td><td>REST APIs</td><td>Job submission and result retrieval</td></tr>
+        <tr><td>CI/CD</td><td>GitHub Actions</td><td>Automated build, test, and deploy pipeline</td></tr>
+        <tr><td>OS</td><td>Linux</td><td>Worker node environment</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card"><p>Designed for production-grade reliability — containerized services enable consistent behavior across dev, staging, and production. Kubernetes health checks automatically replace unhealthy workers, ensuring sustained throughput under concurrent workloads.</p></div>
+</section>
+</main>
+<footer>Sadhana Geddam · Distributed Task Processing System · Python · Docker · Kubernetes · AWS · <a href="https://github.com/sadhanageddam27">github.com/sadhanageddam27</a></footer>
+</body>
+</html>
